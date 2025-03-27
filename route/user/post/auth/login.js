@@ -56,11 +56,15 @@ router.post('/', async (req, res) => {
             }
 
             // Send email to user to notify them of login
+            const deviceInfo = req.device ? `${req.device.vendor || 'Unknown'} ${req.device.model || 'Device'}` : 'Unknown Device';
+            const ipAddress = req.ip || 'Unknown IP Address';
+            const browserInfo = req.headers['user-agent'] || 'Unknown Browser';
+
             await Email.send(
                 user.email,
                 'Login Notification',
-                `Hello ${user.username},\n\nYou have successfully logged in to your account.\n\nIf you did not perform this action, please contact us immediately`,
-                `<p>Hello ${user.username},</p><p>You have successfully logged in to your account.</p><p>If you did not perform this action, please contact us immediately</p>`,
+                `Hello ${user.username},\n\nYou have successfully logged in to your account from ${deviceInfo} using IP address: ${ipAddress} and browser: ${browserInfo}.\n\nIf you did not perform this action, please contact us immediately.`,
+                `<p>Hello ${user.username},</p><p>You have successfully logged in to your account from <strong>${deviceInfo}</strong> using IP address: <strong>${ipAddress}</strong> and browser: <strong>${browserInfo}</strong>.</p><p>If you did not perform this action, please contact us immediately.</p>`,
                 (err, info) => {
                     if (err) {
                         console.error(err);
