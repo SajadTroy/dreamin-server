@@ -6,4 +6,6 @@ router.use('/auth/login', require('./auth/login'));
 router.use('/auth/signup', require('./auth/signup'));
 router.use('/auth/password', require('./auth/password'));
 
+router.use('/note', require('./post/publish'));
+
 module.exports = router;
