@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email });
         user = await User.findOne({ username: email });
 
         if (!user) {
