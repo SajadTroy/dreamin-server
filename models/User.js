@@ -34,6 +34,19 @@ const userSchema = new mongoose.Schema({
             message: 'User must be at least 14 years old and date of birth must be in the past'
         }
     },
+    about: {
+        type: String,
+        maxlength: 100
+    },
+    profile_picture: {
+        type: String,
+        default: 'default.jpg'
+    },
+    country: {
+        type: String,
+        required: true,
+        default: 'Unknown'
+    },
     date_created: {
         type: Date,
         default: Date.now
