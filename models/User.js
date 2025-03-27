@@ -4,17 +4,7 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
-        unique: true,
-        default: async function() {
-            const generateRandomUsername = async () => {
-                const randomString = Math.random().toString(36).substring(2, 8);
-                const randomNumber = Math.floor(1000 + Math.random() * 9000);
-                const username = `user_${randomString}${randomNumber}`;
-                const existingUser = await mongoose.models.User.findOne({ username });
-                return existingUser ? generateRandomUsername() : username;
-            };
-            return await generateRandomUsername();
-        }
+        unique: true
     },
     password: {
         type: String,

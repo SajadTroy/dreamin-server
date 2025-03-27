@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendMail = (email, subject, text, cb) => {
+const send = (email, subject, text, cb) => {
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
@@ -26,4 +26,4 @@ const sendMail = (email, subject, text, cb) => {
   });
 };
 
-module.exports = sendMail;
+module.exports = { send };

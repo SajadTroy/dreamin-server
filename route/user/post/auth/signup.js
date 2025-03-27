@@ -4,7 +4,15 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../../../../models/User');
-const { sendMail } = require('../../../../email.js');
+const Email = require('../../../../email.js');
+
+const generateRandomUsername = async () => {
+    const randomString = Math.random().toString(36).substring(2, 8);
+    const randomNumber = Math.floor(1000 + Math.random() * 9000);
+    const username = `user_${randomString}${randomNumber}`;
+    const existingUser = await User.findOne({ username });
+    return existingUser ? generateRandomUsername() : username;
+};
 
 router.post('/', async (req, res) => {
     const { email, dateOfBirth } = req.body;
@@ -24,6 +32,20 @@ router.post('/', async (req, res) => {
             });
         }
 
+        if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid email'
+            });
+        }
+
+        if (!dateOfBirth.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid date of birth'
+            });
+        }
+
         let user = await User.findOne({ email });
 
         if (user) {
@@ -39,7 +61,8 @@ router.post('/', async (req, res) => {
         user = new User({
             email,
             password: randomPassword,
-            dateOfBirth
+            date_of_birth: new Date(dateOfBirth),
+            username: await generateRandomUsername()
         });
 
         const salt = await bcrypt.genSalt(10);
@@ -48,7 +71,17 @@ router.post('/', async (req, res) => {
         await user.save();
 
         // Send email with the generated password
-        await sendMail(email, 'Account Created Successfully', `Your account was created successfully. Please log in with the following password: ${randomPassword}. We recommend changing your password after logging in.`);
+        await Email.send(email,
+            'Account Created Successfully',
+            `Your account was created successfully. Please log in with the following password: ${randomPassword}. We recommend changing your password after logging in.`,
+            (err, info) => {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log(info);
+                }
+            }
+        );
 
         const payload = {
             user: {
@@ -68,8 +101,8 @@ router.post('/', async (req, res) => {
             });
         });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+        console.error(err);
+        res.status(500).send(err.message);
     }
 });
 
