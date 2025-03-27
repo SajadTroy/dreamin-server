@@ -30,6 +30,21 @@ router.post('/change', async (req, res) => {
         // Save the updated user
         await user.save();
 
+        // Send an email to the user
+        await Email.send(
+            user.email,
+            'Password Updated',
+            'Your password has been updated successfully \n If you did not make this change, please contact us immediately',
+            '<p>Your password has been updated successfully</p><p>If you did not make this change, please contact us immediately</p>',
+            (err, info) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(info);
+                }
+            }
+        );
+
         res.json({ message: 'Password updated successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -9,12 +9,13 @@ const transporter = nodemailer.createTransport({
   },
 }); 
 
-const send = (email, subject, text, cb) => {
+const send = (email, subject, text, html, cb) => {
   const mailOptions = {
     from: `Auxin Pvt <${process.env.EMAIL}>`,
     to: email,
     subject,
     text,
+    html
   };
 
   transporter.sendMail(mailOptions, (err, data) => {
