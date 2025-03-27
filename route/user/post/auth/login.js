@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../../../../models/User');
 
-router.post('/login', async (req, res) => {
+router.post('/', async (req, res) => {
     const { email, password } = req.body;
 
     try {
