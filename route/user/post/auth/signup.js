@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
         // Send email with the generated password
         await Email.send(email,
             'Account Created Successfully',
-            `Your account was created successfully. Please log in with the following password: ${randomPassword}. We recommend changing your password after logging in.`,
+            `Your account was created successfully. \nPlease log in with the following password: ${randomPassword}. \nWe recommend changing your password after logging in.`,
             (err, info) => {
                 if (err) {
                     console.error(err);
