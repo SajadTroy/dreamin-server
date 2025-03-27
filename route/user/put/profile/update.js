@@ -31,7 +31,7 @@ router.put('/update', isLogged, async (req, res, next) => {
 
         await user.save();
 
-        res.status(200).json({ message: 'Profile updated successfully', user });
+        res.status(200).json({ message: 'Profile updated successfully', user_id: user._id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
