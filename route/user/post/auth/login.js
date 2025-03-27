@@ -25,6 +25,7 @@ router.post('/', async (req, res) => {
         }
 
         const user = await User.findOne({ email });
+        user = await User.findOne({ username: email });
 
         if (!user) {
             return res.status(400).json({
