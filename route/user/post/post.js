@@ -29,5 +29,6 @@ router.get('/', (req, res) => {
     });
 });
 router.use('/auth/login', require('./auth/login'));
+router.use('/auth/signup', require('./auth/signup'));
 
 module.exports = router;
