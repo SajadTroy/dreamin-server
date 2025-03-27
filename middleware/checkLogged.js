@@ -5,9 +5,6 @@ const isLogged = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
 
-        console.log(authHeader);
-        
-
         if (!authHeader || !authHeader.startsWith('Bearer')) {
             return res.status(401).json({
                 status: 'error',
@@ -16,13 +13,9 @@ const isLogged = async (req, res, next) => {
         }
 
         const token = authHeader.split(' ')[1];
-
-        console.log(token);
         
         // Verify the token
         const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-
-        console.log(decoded);
         
         // Check if the user exists
         const user = await User.findById(decoded.user.id);
