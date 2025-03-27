@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 
 const send = (email, subject, text, cb) => {
   const mailOptions = {
-    from: process.env.EMAIL,
+    from: `Auxin Pvt <${process.env.EMAIL}>`,
     to: email,
     subject,
     text,
