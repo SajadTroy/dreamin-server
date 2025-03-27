@@ -31,7 +31,7 @@ router.get('/:id', isLogged, async (req, res) => {
 // Route to fetch all posts in the order of latest
 router.get('/', isLogged, async (req, res) => {
     try {
-        const posts = await Post.find()
+        const posts = await Post.find({ parent_note: null })
             .sort({ date_posted: -1 })
             .populate('user', 'username profile_picture');
 
