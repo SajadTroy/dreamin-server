@@ -4,7 +4,17 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        default: async function() {
+            const generateRandomUsername = async () => {
+                const randomString = Math.random().toString(36).substring(2, 8);
+                const randomNumber = Math.floor(1000 + Math.random() * 9000);
+                const username = `user_${randomString}${randomNumber}`;
+                const existingUser = await mongoose.models.User.findOne({ username });
+                return existingUser ? generateRandomUsername() : username;
+            };
+            return await generateRandomUsername();
+        }
     },
     password: {
         type: String,
@@ -18,6 +28,7 @@ const userSchema = new mongoose.Schema({
     gender: {
         type: String,
         required: true,
+        default: 'others',
         enum: ['male', 'female', 'others']
     },
     date_of_birth: {
@@ -40,11 +51,17 @@ const userSchema = new mongoose.Schema({
     },
     profile_picture: {
         type: String,
-        default: 'default.jpg'
+        default: function() {
+            const images = [
+                'https://i.postimg.cc/L4tx4LjV/images.webp',
+                'https://i.postimg.cc/T1J0kvTs/0075450f923f1014eda02bcd5d682496.webp',
+                'https://i.postimg.cc/43jWy18W/batman-pfp-1268.webp'
+            ];
+            return images[Math.floor(Math.random() * images.length)];
+        }
     },
     country: {
         type: String,
-        required: true,
         default: 'Unknown'
     },
     date_created: {

@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../../../../models/User');
 
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+router.post('/signup', async (req, res) => {
+    const { email, password, dateOfBirth } = req.body;
 
     try {
 
@@ -24,23 +24,32 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ email });
-
-        if (!user) {
+        if (!dateOfBirth) {
             return res.status(400).json({
                 status: 'error',
-                message: 'Invalid email or password'
+                message: 'Date of birth is required'
             });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        let user = await User.findOne({ email });
 
-        if (!isMatch) {
+        if (user) {
             return res.status(400).json({
                 status: 'error',
-                message: 'Invalid email or password'
+                message: 'User already exists'
             });
         }
+
+        user = new User({
+            email,
+            password,
+            dateOfBirth
+        });
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        await user.save();
 
         const payload = {
             user: {
