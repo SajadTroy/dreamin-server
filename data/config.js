@@ -1,4 +1,4 @@
-// data/config.js
+// data/config.js is a file that contains the function to connect to the MongoDB database.
 const mongoose = require('mongoose');
 
 const connectDB = async () => {

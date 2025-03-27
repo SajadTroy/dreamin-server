@@ -1,3 +1,4 @@
+// app.js is a file that contains the main code for the application. It connects to the MongoDB database, sets up the Express server, and listens for incoming requests. It also uses the nodemailer library to send emails to users. The app.js file is the entry point for the application and is responsible for setting up the environment and starting the server.
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
@@ -6,7 +7,6 @@ const morgan = require("morgan");
 const colors = require('colors');
 const UAParser = require('ua-parser-js');
 const cors = require('cors');
-const rss_fetch = require('./scripts/rss_fetch');
 const compression = require('compression');
 const connectDB = require("./data/config");
 const app = express();
@@ -56,7 +56,7 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-app.use('/api/fact_check/', require('./route/fact_check'));
+app.use('/api/user/', require('./route/user/user'));
 
 app.listen(PORT, connectDB(), () => {
     console.log(`🚀 Listening at http://127.0.0.1:${PORT}/`);

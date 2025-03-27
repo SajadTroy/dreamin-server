@@ -1,3 +1,4 @@
+// mail.js is a file that contains the function to send an email to the user.
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
