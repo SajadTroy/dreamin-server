@@ -13,7 +13,16 @@ const postSchema = new mongoose.Schema({
     date_posted: {
         type: Date,
         default: Date.now
-    }
+    },
+    parent_note: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+        default: null
+    },
+});
+
+postSchema.virtual('isParent').get(function () {
+    return this.parent_note === null;
 });
 
 module.exports = mongoose.model('Post', postSchema);

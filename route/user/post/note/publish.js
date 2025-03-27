@@ -9,15 +9,30 @@ const Post = require('../../../../models/Post');
 // Route to publish a post
 router.post('/publish', isLogged, async (req, res) => {
     try {
-        const { content } = req.body;
+        const { content, parent_note } = req.body;
 
         if (!content) {
             return res.status(400).json({ message: 'Content is required' });
         }
 
+        let parentNote = null;
+
+        if (parent_note) {
+            if (!mongoose.Types.ObjectId.isValid(parent_note)) {
+                return res.status(400).json({ message: 'Invalid parent note ID' });
+            }
+
+            parentNote = await Post.findById(parent_note);
+
+            if (!parentNote) {
+                return res.status(404).json({ message: 'Parent note not found' });
+            }
+        }
+
         const post = new Post({
             user: req.user._id,
-            content
+            content,
+            parent_note: parentNote ? parentNote._id : null
         });
 
         await post.save();
