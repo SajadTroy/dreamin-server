@@ -28,7 +28,7 @@ router.get('/:id', isLogged, async (req, res) => {
             return res.status(400).json({ message: 'Invalid post ID' });
         }
 
-        const post = await Post.findById(id).populate('user', 'username profile_picture').lean();
+        const post = await Post.findById(id).populate('user', 'username profile_picture is_verified').lean();
 
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
@@ -48,7 +48,7 @@ router.get('/', isLogged, async (req, res) => {
     try {
         const posts = await Post.find({ parent_note: null })
             .sort({ date_posted: -1 })
-            .populate('user', 'username profile_picture')
+            .populate('user', 'username profile_picture is_verified')
             .lean();
 
         for (const post of posts) {
