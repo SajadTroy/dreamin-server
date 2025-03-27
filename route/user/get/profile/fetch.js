@@ -22,6 +22,9 @@ router.get('/self/fetch', isLogged, async (req, res) => {
 // Fetch data of a user by ID (excluding password and email)
 router.get('/fetch/:id', async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
         const user = await User.findById(req.params.id).select('-password -email');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
