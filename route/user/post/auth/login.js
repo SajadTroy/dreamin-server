@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../../../../models/User');
 const Email = require('../../../../email');
+const geoip = require('geoip-lite');
 
 router.post('/', async (req, res) => {
     const { email, password } = req.body;
@@ -55,16 +56,21 @@ router.post('/', async (req, res) => {
                 throw err;
             }
 
-            // Send email to user to notify them of login
+            // Get device, IP, and browser info
             const deviceInfo = req.device ? `${req.device.vendor || 'Unknown'} ${req.device.model || 'Device'}` : 'Unknown Device';
-            const ipAddress = req.ip || 'Unknown IP Address';
+            const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'Unknown IP Address';
             const browserInfo = req.headers['user-agent'] || 'Unknown Browser';
 
+            // Get geo-location data
+            const geoData = geoip.lookup(ipAddress) || { country: 'Unknown', region: 'Unknown', city: 'Unknown' };
+            const locationInfo = `${geoData.city}, ${geoData.region}, ${geoData.country}`;
+
+            // Send email to user to notify them of login
             await Email.send(
                 user.email,
                 'Login Notification',
-                `Hello ${user.username},\n\nYou have successfully logged in to your account from ${deviceInfo} using IP address: ${ipAddress} and browser: ${browserInfo}.\n\nIf you did not perform this action, please contact us immediately.`,
-                `<p>Hello ${user.username},</p><p>You have successfully logged in to your account from <strong>${deviceInfo}</strong> using IP address: <strong>${ipAddress}</strong> and browser: <strong>${browserInfo}</strong>.</p><p>If you did not perform this action, please contact us immediately.</p>`,
+                `Hello ${user.username},\n\nYou have successfully logged in to your account from ${deviceInfo} using IP address: ${ipAddress}, browser: ${browserInfo}, and location: ${locationInfo}.\n\nIf you did not perform this action, please contact us immediately.`,
+                `<p>Hello ${user.username},</p><p>You have successfully logged in to your account from <strong>${deviceInfo}</strong> using IP address: <strong>${ipAddress}</strong>, browser: <strong>${browserInfo}</strong>, and location: <strong>${locationInfo}</strong>.</p><p>If you did not perform this action, please contact us immediately.</p>`,
                 (err, info) => {
                     if (err) {
                         console.error(err);
