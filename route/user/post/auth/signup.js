@@ -4,23 +4,16 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../../../../models/User');
+const { sendMail } = require('../../../../email.js');
 
 router.post('/', async (req, res) => {
-    const { email, password, dateOfBirth } = req.body;
+    const { email, dateOfBirth } = req.body;
 
     try {
-
         if (!email) {
             return res.status(400).json({
                 status: 'error',
                 message: 'Email is required'
-            });
-        }
-
-        if (!password) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Password is required'
             });
         }
 
@@ -40,16 +33,22 @@ router.post('/', async (req, res) => {
             });
         }
 
+        // Generate a random password
+        const randomPassword = Math.random().toString(36).slice(-8);
+
         user = new User({
             email,
-            password,
+            password: randomPassword,
             dateOfBirth
         });
 
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
+        user.password = await bcrypt.hash(randomPassword, salt);
 
         await user.save();
+
+        // Send email with the generated password
+        await sendMail(email, 'Account Created Successfully', `Your account was created successfully. Please log in with the following password: ${randomPassword}. We recommend changing your password after logging in.`);
 
         const payload = {
             user: {
@@ -64,6 +63,7 @@ router.post('/', async (req, res) => {
 
             res.status(200).json({
                 status: 'success',
+                message: 'Account created successfully. Please check your email for login details.',
                 token
             });
         });
