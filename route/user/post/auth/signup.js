@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../../../../models/User');
-const Email = require('../../../../email.js');
+const Email = require('../../../../email');
 
 const generateRandomUsername = async () => {
     const randomString = Math.random().toString(36).substring(2, 8);

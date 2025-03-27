@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const Email = require('../../../../email');
 
 router.post('/change', async (req, res) => {
     const { username, email, oldPassword, newPassword } = req.body;
